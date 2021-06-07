@@ -36,6 +36,7 @@ service = build('slides', 'v1', credentials=creds)
 presentation = ls.create_presentation(title='Test API', slides_service=service)
 
 # get lyrics
+# TODO: code for scraping the lyrics
 verse_dict = {'1': ['Wie allumfassend, Herr, Du bist!',
   'Von Gott sind wir in Dir –',
   'Was Du für uns geworden bist,',
