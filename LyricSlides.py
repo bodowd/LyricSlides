@@ -1,5 +1,6 @@
 """
 Following: https://github.com/googleworkspace/python-samples/blob/master/slides/snippets/slides_snippets.py
+Google Slides API: https://developers.google.com/slides/reference/rest/v1/presentations.pages/text#Page.ParagraphStyle
 """
 from typing import List
 
