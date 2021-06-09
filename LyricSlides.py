@@ -47,6 +47,12 @@ class Slides(object):
 
     def create_textbox_with_text(self, lyrics_list: List,
                                  song_numbers_str: str = 'DE123, E123, F123'):
+        """
+        add lyrics into a text box
+        :param lyrics_list:
+        :param song_numbers_str:
+        :return:
+        """
         service = self.slides_service
 
         songNumbersBoxHeight = {
@@ -252,6 +258,10 @@ class Slides(object):
         return response
 
     def update_slide_background(self):
+        """
+        Make the background blue
+        :return:
+        """
         service = self.slides_service
         requests = [
             {

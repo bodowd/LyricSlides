@@ -5,6 +5,12 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
 import LyricSlides as ls
+import Hymn
+import config
+
+config = config.Config()
+
+### google API code
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/presentations',
@@ -33,49 +39,33 @@ if not creds or not creds.valid:
 service = build('slides', 'v1', credentials=creds)
 
 # create presentation
-presentation = ls.create_presentation(title='Test API', slides_service=service)
+presentation = ls.create_presentation(title=config.presentation_title, slides_service=service)
 
-# get lyrics
-# TODO: code for scraping the lyrics
-verse_dict = {'1': ['Wie allumfassend, Herr, Du bist!',
-  'Von Gott sind wir in Dir –',
-  'Was Du für uns geworden bist,',
-  'So sehr genießen wir.'],
- '2': ['Die Weisheit Gottes bist Du uns,',
-  'Gott rettet uns durch Dich;',
-  'Der Weg zur Rettung Du nur bist,',
-  'Allein und ewiglich.'],
- '3': ['Du bist für uns Gerechtigkeit,',
-  'Der Gottes Recht erfüllt;',
-  'Wir alle sind gerecht in Dir,',
-  'Ins beste Kleid umhüllt.'],
- '4': ['Herr, Du bist unsre Heiligkeit,',
-  'Umwandlung brauchen wir;',
-  'In Dir Du heiligst tadellos,',
-  'Uns gleichgestaltest Dir.'],
- '5': ['Erlösung bist Du auch für uns,',
-  'Dein Abbild unser wird;',
-  'Verklären wirst Du unsern Leib,',
-  'Von Freiheit sublimiert.'],
- '6': ['Wenn wir nun sinnen über Dich,',
-  'Genießen Dich, den Herrn,',
-  'So nähert sich Dein Kommen mehr,',
-  'Du bleibst nicht lange fern.'],
- '7': ['Wie süß der Vorgeschmack doch ist,',
-  'So herrlich und so reich!',
-  'Wir sehnen uns bei Dir zu sein,',
-  'In Füll erfahrn Dich.']}
+slide_count = 0
+for i in range(len(config.de_hymn_numbers)):
+    # get lyrics
+    de_num = config.de_hymn_numbers[i]
+    e_num = config.e_hymn_numbers[i]
+    f_num = config.f_hymn_numbers[i]
 
-for k in verse_dict.keys():
-    verse = f'{k}\n'
-    for line in verse_dict[k]:
-        verse += (line+'\n')
+    # get lyrics
+    hymn = Hymn.Hymn()
+    verse_dict = hymn.get_lyrics(hymn_number=de_num)
 
-    # create slides
-    page_id = f'Slide_{k}'
-    slide = ls.Slides(presentation_id=presentation, slides_service=service, page_id=page_id)
-    response = slide.create_slide(insertion_index=str(k))
-    response = slide.create_textbox_with_text(lyrics_list=verse, song_numbers_str='DE123, E123, F123')
-    response = slide.alter_text_format()
-    response = slide.update_slide_background()
+    # make slide for each verse
+
+    # extract the lyrics from verse_dict which will be the text that goes into the slide
+    for k in verse_dict.keys():
+        verse = f'{k}\n'
+        for line in verse_dict[k]:
+            verse += (line+'\n')
+
+        # create slides
+        page_id = f'Slide_{slide_count}'
+        slide = ls.Slides(presentation_id=presentation, slides_service=service, page_id=page_id)
+        response = slide.create_slide(insertion_index=str(slide_count))
+        response = slide.create_textbox_with_text(lyrics_list=verse, song_numbers_str=f'DE{de_num}, E{e_num}, F{f_num}')
+        response = slide.alter_text_format()
+        response = slide.update_slide_background()
+        slide_count += 1
 
