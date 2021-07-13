@@ -10,6 +10,12 @@ import config
 
 config = config.Config()
 
+def print_verse(verse_dict, k):
+    verse = f'{k}\n'
+    for line in verse_dict[k]:
+        verse += (line + '\n')
+    return verse
+
 ### google API code
 
 # If modifying these scopes, delete the file token.json.
@@ -46,7 +52,10 @@ for i in range(len(config.de_hymn_numbers)):
     # get lyrics
     de_num = config.de_hymn_numbers[i]
     e_num = config.e_hymn_numbers[i]
-    f_num = config.f_hymn_numbers[i]
+    if len(config.f_hymn_numbers) == 0:
+        f_num = '-'
+    else:
+        f_num = config.f_hymn_numbers[i]
 
     # get lyrics
     hymn = Hymn.Hymn()
@@ -56,10 +65,23 @@ for i in range(len(config.de_hymn_numbers)):
 
     # extract the lyrics from verse_dict which will be the text that goes into the slide
     for k in verse_dict.keys():
-        verse = f'{k}\n'
-        for line in verse_dict[k]:
-            verse += (line+'\n')
-
+        if 'chorus' in verse_dict:
+            # add chorus to the end of each verse except for first verse, which already has it in
+            if k != '1' and k != 'chorus':
+                # print the verse as normal, then print the chorus
+                verse = print_verse(verse_dict, k)
+                for count, line in enumerate(verse_dict['chorus']):
+                    # add empty line between the verse and the chorus
+                    if count == 0:
+                        verse += ('\n')
+                    verse += (line + '\n')
+            elif k == 'chorus':
+                continue
+            # else k == '1'
+            else:
+                verse = print_verse(verse_dict, k)
+        else:
+            verse = print_verse(verse_dict, k)
         # create slides
         page_id = f'Slide_{slide_count}'
         slide = ls.Slides(presentation_id=presentation, slides_service=service, page_id=page_id)

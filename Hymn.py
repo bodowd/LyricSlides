@@ -20,7 +20,7 @@ class Hymn(object):
 
         soup = bs(self.driver.page_source, "html.parser")
         # get all divs with either class line or verse-number
-        verses = soup.findAll("div", {'class': ['line', 'verse-number']})
+        verses = soup.findAll("div", {'class': ['line', 'verse-number', 'chorus']})
         verse_dict = {}
         for i in verses:
             if i['class'] == ['verse-number']:
@@ -32,6 +32,12 @@ class Hymn(object):
                     pass
                 else:
                     verse_dict[verse_number].append(i.text)
+            elif i['class'] == ['chorus']:
+                if i.text == '':
+                    pass
+                else:
+                    verse_dict['chorus'] = i.text.split('\n')
+                    # verse_dict['chorus'].append(i.text.split('\n'))
             else:
                 print('Unrecognized div class')
         return verse_dict
@@ -39,5 +45,5 @@ class Hymn(object):
 # test
 if __name__ == "__main__":
     hymn = Hymn()
-    print(hymn.get_lyrics(hymn_number=93))
+    print(hymn.get_lyrics(hymn_number=135))
     hymn.driver.quit()

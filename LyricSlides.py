@@ -24,7 +24,8 @@ class Slides(object):
         self.left_box_id = 'Left_box_'+self.page_id
         self.right_box_id = 'Right_box_'+self.page_id
         self.song_numbers_box_id = 'Song_number_box_'+self.page_id
-        self.FONT_SIZE = 24
+        self.FONT_SIZE = 18
+        self.bold = False
 
     def create_slide(self, insertion_index: str):
         service = self.slides_service
@@ -184,7 +185,7 @@ class Slides(object):
                 'updateTextStyle': {
                     'objectId': self.song_numbers_box_id,
                     'style': {
-                        'bold': True,
+                        'bold': self.bold,
                         'fontFamily': 'Arial',
                         'fontSize': {
                             'magnitude': self.FONT_SIZE + 6,  # numbers slightly larger than lyrics
@@ -207,7 +208,7 @@ class Slides(object):
                 'updateTextStyle': {
                     'objectId': self.left_box_id,
                     'style': {
-                        'bold': True,
+                        'bold': self.bold,
                         'fontFamily': 'Arial',
                         'fontSize': {
                             'magnitude': self.FONT_SIZE,
@@ -230,7 +231,7 @@ class Slides(object):
                 'updateTextStyle': {
                     'objectId': self.right_box_id,
                     'style': {
-                        'bold': True,
+                        'bold': self.bold,
                         'fontFamily': 'Arial',
                         'fontSize': {
                             'magnitude': self.FONT_SIZE,
