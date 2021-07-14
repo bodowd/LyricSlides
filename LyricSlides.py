@@ -24,7 +24,8 @@ class Slides(object):
         self.left_box_id = 'Left_box_'+self.page_id
         self.right_box_id = 'Right_box_'+self.page_id
         self.song_numbers_box_id = 'Song_number_box_'+self.page_id
-        self.FONT_SIZE = 18
+        self.FONT_SIZE = 21
+        self.TITLE_FONT_SIZE = 40
         self.bold = False
 
     def create_slide(self, insertion_index: str):
@@ -189,7 +190,7 @@ class Slides(object):
                         'bold': self.bold,
                         'fontFamily': 'Arial',
                         'fontSize': {
-                            'magnitude': self.FONT_SIZE + 6,  # numbers slightly larger than lyrics
+                            'magnitude': self.TITLE_FONT_SIZE,  # numbers slightly larger than lyrics
                             'unit': 'PT'
                         },
                         'foregroundColor': {
