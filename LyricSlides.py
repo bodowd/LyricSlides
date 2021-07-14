@@ -46,7 +46,7 @@ class Slides(object):
         print(f'Created slide with ID: {obj_id}')
         return response
 
-    def create_textbox_with_text(self, lyrics_list: List,
+    def create_textbox_with_text(self, lyrics_list: List, english_lyrics_list: List,
                                  song_numbers_str: str = 'DE123, E123, F123'):
         """
         add lyrics into a text box
@@ -54,6 +54,7 @@ class Slides(object):
         :param song_numbers_str:
         :return:
         """
+
         service = self.slides_service
 
         songNumbersBoxHeight = {
@@ -153,7 +154,7 @@ class Slides(object):
                 'insertText': {
                     'objectId': self.right_box_id,
                     'insertionIndex': 0,
-                    'text': 'New Box Text Inserted'
+                    'text': english_lyrics_list
                 }
             }
         ]

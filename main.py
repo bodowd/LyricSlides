@@ -70,9 +70,29 @@ service = build('slides', 'v1', credentials=creds)
 # create presentation
 presentation = ls.create_presentation(title=config.presentation_title, slides_service=service)
 
+def extract_lyrics(verse_dict: Dict, k: str):
+    # extract the lyrics from verse_dict which will be the text that goes into the slide
+    if 'chorus' in verse_dict:
+        # add chorus to the end of each verse except for first verse, which already has it in
+        if k != '1' and k != 'chorus':
+            # print the verse as normal, then print the chorus
+            verse = print_verse(verse_dict, k)
+            for count, line in enumerate(verse_dict['chorus']):
+                # add empty line between the verse and the chorus
+                if count == 0:
+                    verse += ('\n')
+                verse += (line + '\n')
+        # otherwise k == '1' or it's chorus but that is handled in the loop below and will be skipped
+        else:
+            verse = print_verse(verse_dict, k)
+    else:
+        verse = print_verse(verse_dict, k)
+    return verse
+
+
 slide_count = 0
 for i in range(len(config.de_hymn_numbers)):
-    # get lyrics
+    # for each hymn number, get lyrics
     de_num = replace_with_hyphen(config.de_hymn_numbers, i)
     e_num = replace_with_hyphen(config.e_hymn_numbers, i)
     c_num = replace_with_hyphen(config.c_hymn_numbers, i)
@@ -81,34 +101,20 @@ for i in range(len(config.de_hymn_numbers)):
 
     # get lyrics
     hymn = Hymn.Hymn()
-    verse_dict = hymn.get_lyrics(hymn_number=de_num)
+    de_verse_dict = hymn.get_lyrics(hymn_number=de_num, language='DE')
+    e_verse_dict = hymn.get_lyrics(hymn_number=e_num, language='E')
 
     # make slide for each verse
-
-    # extract the lyrics from verse_dict which will be the text that goes into the slide
-    for k in verse_dict.keys():
-        if 'chorus' in verse_dict:
-            # add chorus to the end of each verse except for first verse, which already has it in
-            if k != '1' and k != 'chorus':
-                # print the verse as normal, then print the chorus
-                verse = print_verse(verse_dict, k)
-                for count, line in enumerate(verse_dict['chorus']):
-                    # add empty line between the verse and the chorus
-                    if count == 0:
-                        verse += ('\n')
-                    verse += (line + '\n')
-            elif k == 'chorus':
-                continue
-            # else k == '1'
-            else:
-                verse = print_verse(verse_dict, k)
-        else:
-            verse = print_verse(verse_dict, k)
+    for k in de_verse_dict.keys():
+        if k == 'chorus':
+            continue
+        de_verse = extract_lyrics(verse_dict=de_verse_dict, k=k)
+        e_verse = extract_lyrics(verse_dict=e_verse_dict, k=k)
         # create slides
         page_id = f'Slide_{slide_count}'
         slide = ls.Slides(presentation_id=presentation, slides_service=service, page_id=page_id)
         response = slide.create_slide(insertion_index=str(slide_count))
-        response = slide.create_textbox_with_text(lyrics_list=verse,
+        response = slide.create_textbox_with_text(lyrics_list=de_verse, english_lyrics_list=e_verse,
                                                   song_numbers_str=f'DE{de_num}, E{e_num}, C{c_num}, R{r_num}, F{f_num}')
         response = slide.alter_text_format()
         response = slide.update_slide_background()

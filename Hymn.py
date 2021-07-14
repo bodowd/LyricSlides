@@ -11,12 +11,17 @@ class Hymn(object):
         options.headless = True
         self.driver = webdriver.Firefox(options=options)
 
-    def get_lyrics(self, hymn_number: int) -> Dict:
+    def get_lyrics(self, hymn_number: int, language='DE') -> Dict:
         """
         :param hymn_number:
         :return: Dict. verse_dict
         """
-        self.driver.get(f"https://songbase.life/german_hymnal/{hymn_number}")
+        if language == 'DE':
+            self.driver.get(f"https://songbase.life/german_hymnal/{hymn_number}")
+        elif language == 'E':
+            self.driver.get(f"https://songbase.life/english_hymnal/{hymn_number}")
+        else:
+            raise ("Language not supported.")
 
         soup = bs(self.driver.page_source, "html.parser")
         # get all divs with either class line or verse-number
@@ -38,7 +43,6 @@ class Hymn(object):
                     pass
                 else:
                     verse_dict['chorus'] = i.text.split('\n')
-                    # verse_dict['chorus'].append(i.text.split('\n'))
             else:
                 print('Unrecognized div class')
         return verse_dict
@@ -46,5 +50,5 @@ class Hymn(object):
 # test
 if __name__ == "__main__":
     hymn = Hymn()
-    print(hymn.get_lyrics(hymn_number=135))
+    print(hymn.get_lyrics(hymn_number=1237, language='E'))
     hymn.driver.quit()
