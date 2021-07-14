@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -10,18 +12,39 @@ import config
 
 config = config.Config()
 
-def print_verse(verse_dict, k):
+
+def replace_with_hyphen(config_hymn_numbers: List, i: int):
+    """
+    If there is no hymn number for the language, replace the empty list with a '-'
+    :param config_hymn_numbers:
+    :param i:
+    :return:
+    """
+    if len(config_hymn_numbers) == 0:
+        num = '-'
+    else:
+        num = config_hymn_numbers[i]
+    return num
+
+
+def print_verse(verse_dict: Dict, k: int):
+    """
+    Helper function print the verses onto the slide to keep it DRY
+    :param verse_dict:
+    :param k:
+    :return:
+    """
     verse = f'{k}\n'
     for line in verse_dict[k]:
         verse += (line + '\n')
     return verse
 
+
 ### google API code
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/presentations',
-         'https://www.googleapis.com/auth/drive']
-
+          'https://www.googleapis.com/auth/drive']
 
 #### Authentication code from google
 creds = None
@@ -50,12 +73,11 @@ presentation = ls.create_presentation(title=config.presentation_title, slides_se
 slide_count = 0
 for i in range(len(config.de_hymn_numbers)):
     # get lyrics
-    de_num = config.de_hymn_numbers[i]
-    e_num = config.e_hymn_numbers[i]
-    if len(config.f_hymn_numbers) == 0:
-        f_num = '-'
-    else:
-        f_num = config.f_hymn_numbers[i]
+    de_num = replace_with_hyphen(config.de_hymn_numbers, i)
+    e_num = replace_with_hyphen(config.e_hymn_numbers, i)
+    c_num = replace_with_hyphen(config.c_hymn_numbers, i)
+    r_num = replace_with_hyphen(config.r_hymn_numbers, i)
+    f_num = replace_with_hyphen(config.f_hymn_numbers, i)
 
     # get lyrics
     hymn = Hymn.Hymn()
@@ -86,8 +108,8 @@ for i in range(len(config.de_hymn_numbers)):
         page_id = f'Slide_{slide_count}'
         slide = ls.Slides(presentation_id=presentation, slides_service=service, page_id=page_id)
         response = slide.create_slide(insertion_index=str(slide_count))
-        response = slide.create_textbox_with_text(lyrics_list=verse, song_numbers_str=f'DE{de_num}, E{e_num}, F{f_num}')
+        response = slide.create_textbox_with_text(lyrics_list=verse,
+                                                  song_numbers_str=f'DE{de_num}, E{e_num}, C{c_num}, R{r_num}, F{f_num}')
         response = slide.alter_text_format()
         response = slide.update_slide_background()
         slide_count += 1
-

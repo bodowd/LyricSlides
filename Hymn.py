@@ -32,6 +32,7 @@ class Hymn(object):
                     pass
                 else:
                     verse_dict[verse_number].append(i.text)
+            # may not handle hymns with two choruses
             elif i['class'] == ['chorus']:
                 if i.text == '':
                     pass
