@@ -27,6 +27,17 @@ class Hymn(object):
         # get all divs with either class line or verse-number
         verses = soup.findAll("div", {'class': ['line', 'verse-number', 'chorus']})
         verse_dict = {}
+
+        # some songs are only one verse long and songbase.life doesn't display a verse number. In this case make a
+        # verse_number 1
+        HAS_VERSES = False
+        for i in verses:
+            if i['class'] == ['verse-number']:
+                HAS_VERSES = True
+        if not HAS_VERSES:
+            verse_number = '1'
+            verse_dict[verse_number] = []
+
         for i in verses:
             if i['class'] == ['verse-number']:
                 verse_number = i['data-uncopyable-text']
@@ -50,5 +61,5 @@ class Hymn(object):
 # test
 if __name__ == "__main__":
     hymn = Hymn()
-    print(hymn.get_lyrics(hymn_number=1237, language='E'))
+    print(hymn.get_lyrics(hymn_number=546, language='E'))
     hymn.driver.quit()
