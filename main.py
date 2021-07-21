@@ -1,6 +1,7 @@
 from typing import List, Dict
-
+import time
 import os.path
+
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -114,6 +115,8 @@ for i in range(len(config.de_hymn_numbers)):
         page_id = f'Slide_{slide_count}'
         slide = ls.Slides(presentation_id=presentation, slides_service=service, page_id=page_id)
         response = slide.create_slide(insertion_index=str(slide_count))
+        if config.sleep:
+            time.sleep(5)
         response = slide.create_textbox_with_text(lyrics_list=de_verse, english_lyrics_list=e_verse,
                                                   song_numbers_str=f'DE{de_num}, E{e_num}, C{c_num}, R{r_num}, F{f_num}')
         response = slide.alter_text_format()
