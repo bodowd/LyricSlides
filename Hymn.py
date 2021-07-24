@@ -44,7 +44,8 @@ class Hymn(object):
                 verse_dict[verse_number] = []
             elif i['class'] == ['line']:
                 # check if it is an empty line used for spacing
-                if i.text == '':
+                # or this weird extra line that appears before verse number is ever defined
+                if i.text == '' or i.text == 'Hohelied':
                     pass
                 else:
                     verse_dict[verse_number].append(i.text)
