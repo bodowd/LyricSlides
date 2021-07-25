@@ -122,3 +122,6 @@ for i in range(len(config.de_hymn_numbers)):
         response = slide.alter_text_format()
         response = slide.update_slide_background()
         slide_count += 1
+
+    # close the selenium session after each iteration because a new one will start again on the next
+    hymn.driver.quit()
